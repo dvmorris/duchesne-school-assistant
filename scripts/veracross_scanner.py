@@ -11,6 +11,7 @@ import sys
 import os
 import json
 import re
+from datetime import datetime
 from pathlib import Path
 from typing import Optional, List
 
@@ -124,6 +125,13 @@ SAMPLE_SOCIAL_POSTS = [
         timestamp="2026-10-04T12:00:00Z"
     )
 ]
+
+def get_current_season(now: Optional[datetime] = None) -> str:
+    current_month = (now or datetime.now()).month
+    # Oct-Feb -> "fall" (Fall/Winter), Mar-May -> "spring", Jun-Sep -> "fall" (back-to-school)
+    if current_month in (3, 4, 5):
+        return "spring"
+    return "fall"
 
 def _normalize_grade(g: str) -> str:
     s = re.sub(r'[^a-zA-Z0-9]', '', g).lower()
@@ -245,7 +253,7 @@ def run_scanner(
                     known_store_ids = st.get("processed_store_item_ids", [])
             except Exception:
                 pass
-        new_arrivals, featured = detect_new_and_featured(store_items, known_ids=known_store_ids, season="fall")
+        new_arrivals, featured = detect_new_and_featured(store_items, known_ids=known_store_ids, season=get_current_season())
         out = format_store_digest(new_arrivals, featured)
         if output:
             with open(output, "w", encoding="utf-8") as f:
@@ -327,7 +335,7 @@ def run_scanner(
             pass
 
     store_items = parse_store_catalog(SAMPLE_STORE_ITEMS)
-    new_arrivals, featured = detect_new_and_featured(store_items, known_ids=known_store_ids, season="fall")
+    new_arrivals, featured = detect_new_and_featured(store_items, known_ids=known_store_ids, season=get_current_season())
     store_section = format_store_digest(new_arrivals, featured)
 
     social_stories = deduplicate_posts(SAMPLE_SOCIAL_POSTS)

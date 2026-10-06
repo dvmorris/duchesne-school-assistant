@@ -284,5 +284,22 @@ class TestVeracrossScannerCLI(unittest.TestCase):
         self.assertIn("Spirit Store", res.stdout)
         self.assertIn("Social Media Highlights", res.stdout)
 
+    def test_get_current_season(self):
+        from datetime import datetime
+        from scripts.veracross_scanner import get_current_season
+
+        # Fall/Winter months
+        self.assertEqual(get_current_season(datetime(2026, 10, 15)), "fall")
+        self.assertEqual(get_current_season(datetime(2026, 12, 25)), "fall")
+        self.assertEqual(get_current_season(datetime(2026, 1, 10)), "fall")
+
+        # Spring months
+        self.assertEqual(get_current_season(datetime(2026, 3, 1)), "spring")
+        self.assertEqual(get_current_season(datetime(2026, 4, 15)), "spring")
+        self.assertEqual(get_current_season(datetime(2026, 5, 30)), "spring")
+
+        # Summer / back-to-school
+        self.assertEqual(get_current_season(datetime(2026, 8, 20)), "fall")
+
 if __name__ == "__main__":
     unittest.main()

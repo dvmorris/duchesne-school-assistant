@@ -30,8 +30,45 @@ class TestDirectoryExporter(unittest.TestCase):
         self.assertIn("ORG:Duchesne Academy of the Sacred Heart", vcard)
         self.assertIn("TITLE:Parent of Clara Davis (PK4)", vcard)
         self.assertIn("NOTE:Student: Clara Davis | Grade: PK4 | Duchesne Academy Parent Directory", vcard)
-        self.assertIn("ADR;TYPE=HOME:;;10202 Memorial Dr, Houston, TX 77024;;;;", vcard)
+        self.assertIn("ADR;TYPE=HOME:;;10202 Memorial Dr;Houston;TX;77024;USA", vcard)
         self.assertIn("END:VCARD", vcard)
+
+    def test_escape_vcard(self):
+        from scripts.directory_exporter import escape_vcard
+        self.assertEqual(escape_vcard("Hello, World; Testing\\Slash\nNewline"), "Hello\\, World\\; Testing\\\\Slash\\nNewline")
+        self.assertEqual(escape_vcard(""), "")
+
+    def test_format_vcard_adr(self):
+        from scripts.directory_exporter import format_vcard_adr
+        # Full standard address
+        self.assertEqual(
+            format_vcard_adr("10202 Memorial Dr, Houston, TX 77024"),
+            "ADR;TYPE=HOME:;;10202 Memorial Dr;Houston;TX;77024;USA"
+        )
+        # Address with apartment/suite
+        self.assertEqual(
+            format_vcard_adr("10202 Memorial Dr, Suite 200, Houston, TX 77024"),
+            "ADR;TYPE=HOME:;;10202 Memorial Dr\\, Suite 200;Houston;TX;77024;USA"
+        )
+        # Fallback simple street
+        self.assertEqual(
+            format_vcard_adr("10202 Memorial Dr"),
+            "ADR;TYPE=HOME:;;10202 Memorial Dr;;;;"
+        )
+
+    def test_generate_vcard_content_escaping(self):
+        contact = ParentContact(
+            first_name="Jane, Jr.",
+            last_name="Doe; Smith",
+            email="jane@example.com",
+            phone="123",
+            child_name="Clara\nLily",
+            child_grade="PK4"
+        )
+        vcard = generate_vcard_content([contact])
+        self.assertIn("FN:Jane\\, Jr. Doe\\; Smith", vcard)
+        self.assertIn("N:Doe\\; Smith;Jane\\, Jr.;;;", vcard)
+        self.assertIn("NOTE:Student: Clara\\nLily | Grade: PK4 | Duchesne Academy Parent Directory", vcard)
 
     def test_generate_vcard_content_minimal(self):
         contact = ParentContact(

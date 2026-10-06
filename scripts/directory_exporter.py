@@ -49,20 +49,69 @@ def parse_directory_roster(roster_data: Union[List[Dict[str, Any]], str]) -> Lis
                 ))
     return contacts
 
+def escape_vcard(text: str) -> str:
+    if not text:
+        return ""
+    s = str(text)
+    s = s.replace("\\", "\\\\")
+    s = s.replace(";", "\\;")
+    s = s.replace(",", "\\,")
+    s = s.replace("\r\n", "\\n").replace("\r", "\\n").replace("\n", "\\n")
+    return s
+
+def format_vcard_adr(address: str) -> str:
+    if not address:
+        return ""
+    addr = address.strip()
+    m = re.match(r'^(.*?),\s*([^,]+),\s*([A-Za-z]{2,})\s+([0-9]{5}(?:-[0-9]{4})?)(?:,\s*(.*))?$', addr)
+    if m:
+        street = escape_vcard(m.group(1).strip())
+        city = escape_vcard(m.group(2).strip())
+        state = escape_vcard(m.group(3).strip())
+        zip_code = escape_vcard(m.group(4).strip())
+        country = escape_vcard(m.group(5).strip()) if m.group(5) else "USA"
+        return f"ADR;TYPE=HOME:;;{street};{city};{state};{zip_code};{country}"
+
+    parts = [p.strip() for p in addr.split(",")]
+    if len(parts) >= 3:
+        street = escape_vcard(parts[0])
+        city = escape_vcard(parts[1])
+        state_zip = parts[2].split()
+        if len(state_zip) >= 2:
+            state = escape_vcard(state_zip[0])
+            zip_code = escape_vcard(" ".join(state_zip[1:]))
+        else:
+            state = escape_vcard(parts[2])
+            zip_code = ""
+        country = escape_vcard(parts[3]) if len(parts) > 3 else "USA"
+        return f"ADR;TYPE=HOME:;;{street};{city};{state};{zip_code};{country}"
+
+    return f"ADR;TYPE=HOME:;;{escape_vcard(addr)};;;;"
+
 def generate_vcard_content(contacts: List[ParentContact]) -> str:
     cards = []
     for c in contacts:
+        fn = escape_vcard(f"{c.first_name} {c.last_name}".strip())
+        n_last = escape_vcard(c.last_name)
+        n_first = escape_vcard(c.first_name)
+        org = escape_vcard("Duchesne Academy of the Sacred Heart")
+        title_text = f"Parent of {c.child_name} ({c.child_grade})" if c.child_name else "Duchesne Parent"
+        title = escape_vcard(title_text)
+        note_text = f"Student: {c.child_name} | Grade: {c.child_grade} | Duchesne Academy Parent Directory"
+        note = escape_vcard(note_text)
+        adr_line = format_vcard_adr(c.address) if c.address else ""
+
         card = [
             "BEGIN:VCARD",
             "VERSION:3.0",
-            f"FN:{c.first_name} {c.last_name}".strip(),
-            f"N:{c.last_name};{c.first_name};;;",
+            f"FN:{fn}",
+            f"N:{n_last};{n_first};;;",
             f"EMAIL;TYPE=INTERNET,HOME:{c.email}" if c.email else "",
             f"TEL;TYPE=CELL:{c.phone}" if c.phone else "",
-            "ORG:Duchesne Academy of the Sacred Heart",
-            f"TITLE:Parent of {c.child_name} ({c.child_grade})" if c.child_name else "TITLE:Duchesne Parent",
-            f"NOTE:Student: {c.child_name} | Grade: {c.child_grade} | Duchesne Academy Parent Directory",
-            f"ADR;TYPE=HOME:;;{c.address};;;;" if c.address else "",
+            f"ORG:{org}",
+            f"TITLE:{title}",
+            f"NOTE:{note}",
+            adr_line,
             "END:VCARD"
         ]
         cards.append("\n".join([line for line in card if line]))
