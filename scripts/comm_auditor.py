@@ -53,8 +53,12 @@ def audit_communication_settings(settings_data: Dict[str, bool]) -> Communicatio
 
     if not settings_data.get("faculty_messages_email", True):
         critical_warnings.append(
-            "CRITICAL: Email notifications are turned OFF for direct faculty and staff messages. "
-            "Messages sent by teachers will only appear inside the portal and will NOT be forwarded to your inbox."
+            "CRITICAL: Email notifications are turned OFF for direct faculty and staff messages.\n"
+            "Messages sent by teachers will only appear inside the portal and will NOT be forwarded to your inbox.\n\n"
+            "🔧 How to fix:\n"
+            "1. Go to Veracross Parent Portal (https://portals.veracross.com/duchesne/parent).\n"
+            "2. Click your name / profile icon in the top right > Manage School Communication.\n"
+            "3. Turn ON \"Send an email copy\" for Direct Messages from Faculty/Staff."
         )
 
     if not settings_data.get("division_announcements_email", True):

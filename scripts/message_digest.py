@@ -18,7 +18,7 @@ class VeracrossMessage:
 
 def parse_iso_or_fallback(ts: str) -> datetime:
     try:
-        clean_ts = ts.replace("Z", "+00:00")
+        clean_ts = ts.strip().replace("Z", "+00:00").replace("z", "+00:00")
         dt = datetime.fromisoformat(clean_ts)
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=timezone.utc)

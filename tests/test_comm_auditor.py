@@ -15,6 +15,10 @@ class TestCommAuditor(unittest.TestCase):
         result = audit_communication_settings(settings)
         self.assertFalse(result.is_healthy)
         self.assertTrue(any("faculty and staff messages" in w for w in result.critical_warnings))
+        self.assertTrue(any("🔧 How to fix:" in w for w in result.critical_warnings))
+        self.assertTrue(any("https://portals.veracross.com/duchesne/parent" in w for w in result.critical_warnings))
+        self.assertTrue(any("Manage School Communication" in w for w in result.critical_warnings))
+        self.assertTrue(any('Turn ON "Send an email copy"' in w for w in result.critical_warnings))
 
     def test_audit_passes_when_all_enabled(self):
         settings = {

@@ -3,7 +3,8 @@ from datetime import datetime, timedelta, timezone
 from scripts.message_digest import (
     VeracrossMessage,
     parse_messages,
-    format_messages_digest
+    format_messages_digest,
+    parse_iso_or_fallback
 )
 
 class TestMessageDigest(unittest.TestCase):
@@ -123,6 +124,41 @@ class TestMessageDigest(unittest.TestCase):
         self.assertEqual(parsed[0].snippet, "")
         self.assertFalse(parsed[0].is_action_needed)
         self.assertEqual(parsed[0].delivery_type, "portal_only")
+
+    def test_parse_iso_or_fallback_timezone_aware(self):
+        # Naive datetime string
+        dt_naive = parse_iso_or_fallback("2026-10-05T14:00:00")
+        self.assertIsNotNone(dt_naive.tzinfo)
+        self.assertEqual(dt_naive.tzinfo, timezone.utc)
+        self.assertEqual(dt_naive.year, 2026)
+        self.assertEqual(dt_naive.month, 10)
+        self.assertEqual(dt_naive.day, 5)
+        self.assertEqual(dt_naive.hour, 14)
+
+        # UTC with 'Z'
+        dt_utc = parse_iso_or_fallback("2026-10-05T14:00:00Z")
+        self.assertIsNotNone(dt_utc.tzinfo)
+        self.assertEqual(dt_utc.tzinfo, timezone.utc)
+
+        # Invalid/empty fallback
+        dt_invalid = parse_iso_or_fallback("not-a-timestamp")
+        self.assertIsNotNone(dt_invalid.tzinfo)
+        self.assertEqual(dt_invalid.tzinfo, timezone.utc)
+
+    def test_parse_messages_naive_timestamp(self):
+        # Ensure comparison against cutoff does not raise TypeError: can't compare offset-naive and offset-aware datetimes
+        now = datetime.now(timezone.utc)
+        naive_recent = (now - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S")
+        raw = [{
+            "id": "naive_01",
+            "sender": "Teacher",
+            "subject": "Naive Timestamp Subject",
+            "timestamp": naive_recent,
+            "body": "Test message body."
+        }]
+        parsed = parse_messages(raw, max_age_days=14)
+        self.assertEqual(len(parsed), 1)
+        self.assertEqual(parsed[0].id, "naive_01")
 
 
 if __name__ == "__main__":
