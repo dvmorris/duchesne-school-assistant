@@ -82,7 +82,9 @@ def synthesize_family_digest(
     dashboard_items: List[DashboardItem],
     comm_result: Optional[CommunicationAuditResult] = None,
     messages: Optional[List[VeracrossMessage]] = None,
-    calendar_feeds: Optional[Dict[str, str]] = None
+    calendar_feeds: Optional[Dict[str, str]] = None,
+    store_section: Optional[str] = None,
+    social_section: Optional[str] = None
 ) -> str:
     """Synthesize a complete multi-division family digest in Markdown format."""
     lines = ["# 🏫 Duchesne Academy Updates\n"]
@@ -136,7 +138,17 @@ def synthesize_family_digest(
             lines.append("*(No active announcements for this division today)*")
         lines.append("")
 
-    # 6. Calendar Subscriptions
+    # 6. Duchesne Spirit Store
+    if store_section:
+        lines.append(store_section)
+        lines.append("")
+
+    # 7. Social Media Highlights
+    if social_section:
+        lines.append(social_section)
+        lines.append("")
+
+    # 8. Calendar Subscriptions
     if calendar_feeds:
         lines.append(format_calendar_subscription_instructions(calendar_feeds))
 

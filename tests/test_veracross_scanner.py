@@ -219,5 +219,70 @@ class TestVeracrossScannerCLI(unittest.TestCase):
         self.assertEqual(res.returncode, 0)
         self.assertIn("Duchesne Assistant State", res.stdout)
 
+    def test_cli_store_and_social_actions(self):
+        # Test store action
+        res_store = subprocess.run(
+            [sys.executable, SCANNER_SCRIPT, "--action", "store"],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+            env={**os.environ, "PYTHONPATH": str(REPO_ROOT)}
+        )
+        self.assertEqual(res_store.returncode, 0)
+        self.assertIn("Spirit Store", res_store.stdout)
+
+        # Test social action
+        res_social = subprocess.run(
+            [sys.executable, SCANNER_SCRIPT, "--action", "social"],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+            env={**os.environ, "PYTHONPATH": str(REPO_ROOT)}
+        )
+        self.assertEqual(res_social.returncode, 0)
+        self.assertIn("Social Media Highlights", res_social.stdout)
+
+    def test_cli_contacts_action(self):
+        res = subprocess.run(
+            [sys.executable, SCANNER_SCRIPT, "--action", "contacts"],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+            env={**os.environ, "PYTHONPATH": str(REPO_ROOT)}
+        )
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("Parent Directory", res.stdout)
+        self.assertIn("Jane Doe", res.stdout)
+
+    def test_cli_contacts_action_with_grade_filter(self):
+        res = subprocess.run(
+            [sys.executable, SCANNER_SCRIPT, "--action", "contacts", "--grade", "PK4"],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+            env={**os.environ, "PYTHONPATH": str(REPO_ROOT)}
+        )
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("PK4", res.stdout)
+        self.assertIn("Jane Doe", res.stdout)
+        self.assertNotIn("Sophia Johnson", res.stdout)
+
+    def test_cli_full_scan_includes_store_and_social(self):
+        res = subprocess.run(
+            [
+                sys.executable, SCANNER_SCRIPT,
+                "--profile", self.profile_path,
+                "--state", self.state_path,
+                "--action", "full-scan"
+            ],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+            env={**os.environ, "PYTHONPATH": str(REPO_ROOT)}
+        )
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("Spirit Store", res.stdout)
+        self.assertIn("Social Media Highlights", res.stdout)
+
 if __name__ == "__main__":
     unittest.main()
