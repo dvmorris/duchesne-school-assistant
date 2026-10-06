@@ -28,9 +28,12 @@ Supports **Dual-Mode Execution**:
 | **Veracross Messages** | `https://portals.veracross.com/duchesne/parent/messages` | Yes (Veracross session) | Direct faculty/staff messages, student progress notes (14-day rolling digest) |
 | **Communication Preferences** | `https://portals.veracross.com/duchesne/parent/communication_preferences` | Yes (Veracross session) | Manage School Communication toggles (audit email forwarding status) |
 | **Veracross Calendars** | `https://portals.veracross.com/duchesne/parent/calendar` | Yes (Veracross session) | Personalized family schedules & all-school subscription feeds (`webcal://` / `.ics`) |
+| **Parent Directory** | `https://portals.veracross.com/duchesne/parent/directory` | Yes (Veracross session) | Classmate parent contacts, emails, phone numbers, and addresses for grade levels |
+| **Spirit Store** | `https://duchesnespiritstore.square.site/` | No (Public) | School merchandise, outerwear, uniforms, spirit gear, hair accessories |
 | **Toddle LMS** | `https://web.toddleapp.com/platform/116643011487614044/courses` | Yes (Toddle login / Google SSO) | Homeroom weekly newsletter (Sophie's Space, Learning Focus, Reminders), Portfolio photos |
 | **Lunch Menu** | `https://duchesne.nutrislice.com/menu/lower-school/lunch` | No (Public) | Daily & weekly Lower School lunch menus, allergens, nutritional details |
-| **Instagram** | `https://www.instagram.com/duchesnehouston` | No (Public) | Campus event highlights, photos, sports recaps |
+| **Social Media (12 Channels)** | Instagram, Facebook, LinkedIn, YouTube | No (Public) | 12 official Duchesne handles across athletics, arts, alumnae, admissions, and all-school |
+
 
 ---
 
@@ -311,7 +314,90 @@ Veracross provides personalized calendar feeds containing student schedules, div
 
 ---
 
+## Duchesne Spirit Store Crawler & Merchandise Alerts
+
+Monitors the official Duchesne Spirit Store (`https://duchesnespiritstore.square.site/`) to alert parents to new merchandise arrivals, seasonal items, and division-specific gear without requiring a store login.
+
+### Features
+1. **Catalog Parsing:** Fetches Square Online product listings directly and normalizes items into `StoreItem` records (id, title, price, category, product URL).
+2. **New Arrival Detection:** Compares active inventory against `known_spirit_store_ids` in `~/.gemini/antigravity/duchesne_state.json`. Any newly detected product is flagged with a `🆕 New Arrival` badge.
+3. **Seasonal & Division Featured Picks:**
+   - **Fall/Winter (Oct – Feb):** Highlights outerwear, fleece jackets, hoodies, knit sweaters, and sweatshirts.
+   - **Spring (Mar – May):** Highlights spirit tees, athletic caps, polos, and warm-weather gear.
+   - **Division Context:** Highlights Lower School accessories (plaid bows, uniform ribbons) for LS families; Middle/Upper school outerwear and sports gear for MS/US families.
+
+### Execution
+- Standalone CLI check:
+  ```bash
+  python3 scripts/veracross_scanner.py --action store
+  ```
+- Automatically included in full weekly family scans (`--action full-scan`).
+
+---
+
+## Parent Directory Crawler & Contacts Exporter (vCard & CSV)
+
+Crawls classmate and parent contact listings from the Veracross Parent Directory (`https://portals.veracross.com/duchesne/parent/directory`) for the user's child's grade level and exports individual parent contact cards into standard `.vcf` (vCard 3.0) and Google Contacts CSV.
+
+### Individual Contact Card Schema
+Each parent receives their own dedicated contact entry:
+- **Full Name:** `Jane Doe`
+- **Email:** `jane.doe@example.com`
+- **Phone:** `(713) 555-0123`
+- **Organization:** `Duchesne Academy of the Sacred Heart`
+- **Job Title / Relationship:** `Parent of Clara Davis (PK4)`
+- **Notes:** `Student: Clara Davis | Grade: PK4 | Duchesne Academy Parent Directory`
+- **Home Address:** Household address (if provided in portal).
+
+### 1-Click Import Formats
+1. **vCard 3.0 (`.vcf` - RFC 6350):**
+   - Double-clicking or tapping the generated `.vcf` file on **Mac**, **iPhone**, **iPad**, **Android**, or **Windows** prompts the native Contacts app to import the classmate parents in a single click.
+2. **Google Contacts CSV:**
+   - Adheres to Google's official import schema. Upload directly at `https://contacts.google.com` > **Import** > select CSV.
+
+### Execution
+- Standalone directory export for a specific grade:
+  ```bash
+  python3 scripts/veracross_scanner.py --action contacts --grade PK4 --output ~/Downloads/Duchesne_PK4_Parents.vcf
+  python3 scripts/veracross_scanner.py --action contacts --grade PK4 --output ~/Downloads/Duchesne_PK4_Parents.csv
+  ```
+- If `--grade` is omitted, the exporter defaults to all active grade levels registered in `duchesne_profile.json`.
+
+---
+
+## 12-Channel Social Media Aggregator & Deduplication
+
+Duchesne Academy maintains 12 official social media accounts across Instagram, Facebook, LinkedIn, and YouTube. The assistant aggregates public updates across all 12 channels and deduplicates cross-posted content.
+
+### Registered Channels
+1. **Instagram (Main / All-School):** `https://www.instagram.com/duchesnehouston`
+2. **Instagram (Athletics):** `https://www.instagram.com/duchesneathletics`
+3. **Instagram (Charger Girls Dance):** `https://www.instagram.com/chargergirlsdance/`
+4. **Instagram (Fine Arts):** `https://www.instagram.com/duchesne_arts/`
+5. **Instagram (Upper School):** `https://www.instagram.com/duchesneupperschool`
+6. **Instagram (Admissions):** `https://www.instagram.com/duchesneadmissions/`
+7. **Instagram (Alumnae):** `https://www.instagram.com/duchesnealumnae`
+8. **LinkedIn (Official):** `https://www.linkedin.com/school/duchesne-academy-of-the-sacred-heart/`
+9. **Facebook (Main):** `https://www.facebook.com/DuchesneAcademyHouston`
+10. **Facebook (Athletics & Campus Life):** `https://www.facebook.com/profile.php?id=100079069373448`
+11. **Facebook (Alumnae):** `https://www.facebook.com/DuchesneHoustonAlums`
+12. **YouTube (Official):** `https://www.youtube.com/@duchesneacademyofthesacred1409`
+
+### Cross-Channel Deduplication Engine
+- Cleans and normalizes captions by stripping hashtags (`#chargers`, `#duchesnehouston`), web URLs, and punctuation.
+- Calculates token-level **Jaccard similarity** between posts.
+- Any post pair sharing $\ge 70\%$ token similarity (or identical headline event text) is merged into a single `UnifiedSocialStory` combining clickable links to all platforms where it was shared (e.g. `[Instagram (@duchesneathletics)] · [Facebook]`).
+
+### Execution
+- Run social highlights check:
+  ```bash
+  python3 scripts/veracross_scanner.py --action social
+  ```
+
+---
+
 ## Toddle LMS Workflows (Lower School / Early Childhood)
+
 
 For Lower School students (PK3–4th) enrolled in Toddle:
 
@@ -425,12 +511,29 @@ When producing a daily or weekly synthesized report, format output using clear, 
 - **Monday:** Baked Chicken Tenders, Macaroni & Cheese, Steamed Broccoli (Veg: Black Bean Burger)
 - **Tuesday:** Beef Tacos, Spanish Rice, Pinto Beans (Veg: Bean & Cheese Tacos)
 
+### 🛍️ Duchesne Spirit Store: New Arrivals & Featured Picks
+* **🆕 New Arrivals:**
+  - [Navy Duchesne Full-Zip Fleece ($48.00)](https://duchesnespiritstore.square.site/product/navy-fleece/101) — *Category: Outerwear*
+* **⭐ Seasonal Featured Picks:**
+  - [Charger Spirit T-Shirt ($22.00)](https://duchesnespiritstore.square.site/product/spirit-shirt/102)
+  - [Plaid Uniform Hair Bow ($12.00)](https://duchesnespiritstore.square.site/product/hair-bow/103)
+* 🔗 [Browse Full Spirit Store Online](https://duchesnespiritstore.square.site/)
+
+### 📱 Duchesne Social Media Highlights (Unified & Deduplicated)
+* **🏐 Varsity Volleyball Sweeps Episcopal in 3 Sets!** — *2026-10-04*
+  * *Summary:* The Chargers started SPC play strong with a decisive 3-0 sweep at home.
+  * 🔗 **View on:** [Instagram (@duchesneathletics)](https://www.instagram.com/p/...) · [Facebook](https://www.facebook.com/...)
+* **💍 Class of 2027 Ring Ceremony in the Chapel** — *2026-10-02*
+  * *Summary:* Juniors celebrated one of Duchesne's cherished traditions with their families.
+  * 🔗 **View on:** [Instagram (@duchesneupperschool)](https://www.instagram.com/p/...)
+
 ### 📅 Calendar Subscriptions
 #### 🗓️ All-School Calendar
 * **Feed URL:** `https://portals.veracross.com/duchesne/subscribe/all_school.ics`
 * [🍏 **1-Click Subscribe (Apple Calendar / Mac / iOS)**](webcal://portals.veracross.com/duchesne/subscribe/all_school.ics)
 * [📅 **1-Click Subscribe (Google Calendar Web)**](https://calendar.google.com/calendar/r?cid=https%3A%2F%2Fportals.veracross.com%2Fduchesne%2Fsubscribe%2Fall_school.ics)
 * [✉️ **Add to Outlook Calendar**](https://outlook.office.com/calendar/addcalendar)
+
 
 ### 🗄️ Archival & Sync Status
 - Google Drive: Saved `Duchesne_Newsletter_2026-10-05_PK4.pdf`
