@@ -58,18 +58,22 @@ def infer_dashboards_for_divisions(divisions: List[str], preferences: Optional[D
 
     return dashboards
 
-def save_profile(profile: FamilyProfile, filepath: str) -> None:
-    dirname = os.path.dirname(os.path.abspath(filepath))
+DEFAULT_PROFILE_PATH = os.path.expanduser("~/.gemini/antigravity/duchesne_profile.json")
+
+def save_profile(profile: FamilyProfile, filepath: Optional[str] = None) -> None:
+    target_path = os.path.expanduser(filepath or DEFAULT_PROFILE_PATH)
+    dirname = os.path.dirname(os.path.abspath(target_path))
     if dirname:
         os.makedirs(dirname, exist_ok=True)
     data = asdict(profile)
-    with open(filepath, "w", encoding="utf-8") as f:
+    with open(target_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
-def load_profile(filepath: str) -> FamilyProfile:
-    if not os.path.exists(filepath):
+def load_profile(filepath: Optional[str] = None) -> FamilyProfile:
+    target_path = os.path.expanduser(filepath or DEFAULT_PROFILE_PATH)
+    if not os.path.exists(target_path):
         return FamilyProfile()
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(target_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     children = [ChildProfile(**c) for c in data.get("children", [])]
     return FamilyProfile(

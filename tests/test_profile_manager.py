@@ -2,13 +2,15 @@ import unittest
 import os
 import json
 import tempfile
+from unittest.mock import patch
 from scripts.profile_manager import (
     ChildProfile,
     FamilyProfile,
     save_profile,
     load_profile,
     infer_dashboards_for_divisions,
-    normalize_division
+    normalize_division,
+    DEFAULT_PROFILE_PATH
 )
 
 class TestProfileManager(unittest.TestCase):
@@ -92,6 +94,31 @@ class TestProfileManager(unittest.TestCase):
         self.assertIsInstance(profile, FamilyProfile)
         self.assertEqual(len(profile.children), 0)
         self.assertEqual(profile.family_id, "")
+
+    def test_default_profile_path_constant(self):
+        self.assertTrue(DEFAULT_PROFILE_PATH.endswith(os.path.join(".gemini", "antigravity", "duchesne_profile.json")))
+        self.assertFalse(DEFAULT_PROFILE_PATH.startswith("~"))
+
+    def test_default_filepath_parameter_usage(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            test_default = os.path.join(tmpdir, "default_profile.json")
+            with patch("scripts.profile_manager.DEFAULT_PROFILE_PATH", test_default):
+                profile = FamilyProfile(family_id="default_family", children=[])
+                save_profile(profile)
+                self.assertTrue(os.path.exists(test_default))
+                loaded = load_profile()
+                self.assertEqual(loaded.family_id, "default_family")
+
+    def test_tilde_expansion(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            target_file = os.path.join(tmpdir, "tilde_test.json")
+            with patch("os.path.expanduser") as mock_expand:
+                mock_expand.side_effect = lambda p: target_file if isinstance(p, str) and p.startswith("~/") else p
+                profile = FamilyProfile(family_id="tilde_family", children=[])
+                save_profile(profile, "~/fake_path/tilde_test.json")
+                self.assertTrue(os.path.exists(target_file))
+                loaded = load_profile("~/fake_path/tilde_test.json")
+                self.assertEqual(loaded.family_id, "tilde_family")
 
 if __name__ == "__main__":
     unittest.main()
