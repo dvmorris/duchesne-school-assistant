@@ -105,4 +105,27 @@ class TestDistributionContent(unittest.TestCase):
         self.assertIn("claude.ai", guide_content.lower())
         self.assertIn("gemini.google.com", guide_content.lower())
 
+    def test_root_readme_parent_guide(self):
+        readme_path = REPO_ROOT / "README.md"
+        self.assertTrue(readme_path.exists())
+        with open(readme_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        # Target repo URL
+        self.assertIn("https://github.com/dvmorris/duchesne-school-assistant", content)
+
+        # Platform sync instructions
+        self.assertIn("Claude", content)
+        self.assertIn("Add marketplace", content)
+        self.assertIn("Sync", content)
+        self.assertIn("Gemini", content)
+        self.assertIn("ChatGPT", content)
+
+        # Option B
+        self.assertIn("Download ZIP", content)
+
+        # Privacy
+        self.assertIn("Zero-Password", content)
+
+
 
