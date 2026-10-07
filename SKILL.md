@@ -34,6 +34,18 @@ Supports **Dual-Mode Execution**:
 | **Lunch Menu** | `https://duchesne.nutrislice.com/menu/lower-school/lunch` | No (Public) | Daily & weekly Lower School lunch menus, allergens, nutritional details |
 | **Social Media (12 Channels)** | Instagram, Facebook, LinkedIn, YouTube | No (Public) | 12 official Duchesne handles across athletics, arts, alumnae, admissions, and all-school |
 
+### Cross-Platform Distribution & Sync Assets
+
+| Asset / Component | Path / Location | Target Platform | Description |
+|---|---|---|---|
+| **Repository URL** | `https://github.com/dvmorris/duchesne-school-assistant` | All Platforms | Canonical GitHub repository for 1-click URL sync across Claude, Gemini, and ChatGPT |
+| **Claude Plugin Manifest** | `.claude-plugin/plugin.json` | Claude Code / Desktop | Native Claude plugin metadata, versioning, author, and skill definition |
+| **Claude Marketplace Manifest** | `.claude-plugin/marketplace.json` | Claude Marketplace | Marketplace catalogue entry pointing to GitHub repository |
+| **Master Knowledge Base** | `distribution/common/duchesne_knowledge_base.md` | Universal | Comprehensive static knowledge base (bell schedules, dress codes, dining, 12 social channels, portals, zero-password guarantee) |
+| **1-Click Calendar Links** | `distribution/common/calendar_links.md` | Apple / Google / Outlook | Pre-formatted `webcal://`, Google web URL, and Outlook subscription guides |
+| **Universal Parent Prompt** | `distribution/web/universal_parent_prompt.md` | ChatGPT / Claude.ai / Gemini | Single-file zero-dependency prompt for pure web chat AI assistants |
+| **Web Chat Setup Guide** | `distribution/web/setup_guide.md` | Web Chat Users | Step-by-step visual onboarding guide for non-technical parents |
+| **Root Parent Guide** | `README.md` | Public GitHub | High-level overview, 1-click sync guide, Zero-Password policy, and CLI instructions |
 
 ---
 
@@ -166,6 +178,8 @@ node ~/.gemini/config/skills/duchesne-school-assistant/scripts/upload_photos_bro
 
 Use this mode when running in a cloud web chat environment without a local shell or direct browser control.
 
+> 💡 **Frictionless Web Chat Setup:** Instead of manual configuration, parents in web chats can copy and paste the single universal prompt from [`distribution/web/universal_parent_prompt.md`](distribution/web/universal_parent_prompt.md) or upload [`distribution/common/duchesne_knowledge_base.md`](distribution/common/duchesne_knowledge_base.md). Complete instructions for ChatGPT, Claude.ai, and Gemini are available in [`distribution/web/setup_guide.md`](distribution/web/setup_guide.md).
+
 #### Step 1: Initialize Family Profile
 Prompt the user with this template:
 > "To tailor your Duchesne Academy digest, please reply with:
@@ -197,6 +211,55 @@ When the user pastes the content, evaluate the toggles using the rules in the Co
 #### Step 5: Calendar Subscriptions Setup
 > "To generate 1-click subscription links for your Apple Calendar, Google Calendar, or Outlook:
 > Open [Veracross Calendar Subscriptions](https://portals.veracross.com/duchesne/parent/calendar) > click **Subscribe** > copy your calendar feed URL(s) (e.g. `https://portals.veracross.com/duchesne/subscribe/...ics`). Paste the links here and I will format one-click subscription links for your devices."
+
+---
+
+## Cross-Platform Distribution Architecture
+
+The Duchesne School Assistant repository provides an omnichannel architecture that serves both developer-grade agent environments and non-technical consumer chat users:
+
+```
+duchesne-school-assistant/
+├── .claude-plugin/                     # Native Claude Code & Desktop plugin manifests
+│   ├── plugin.json                     # Plugin metadata, semver, repository, and skill mapping
+│   └── marketplace.json                # Claude marketplace catalogue entry
+├── distribution/
+│   ├── common/                         # Platform-agnostic shared knowledge assets
+│   │   ├── duchesne_knowledge_base.md  # Master knowledge base (schedules, uniform, dining, 12 social channels)
+│   │   └── calendar_links.md           # 1-click webcal:// & Google Calendar subscription guide
+│   └── web/                            # Consumer web chat distribution assets
+│       ├── universal_parent_prompt.md  # Single zero-dependency prompt for ChatGPT, Claude.ai, Gemini
+│       └── setup_guide.md              # Parent-friendly web setup instructions
+├── scripts/                            # Standalone Python CLI tools (stdlib only, zero pip dependencies)
+├── tests/                              # Automated test suite (79+ tests passing)
+├── README.md                           # Public GitHub parent guide & 1-click sync documentation
+└── SKILL.md                            # Canonical skill specification & agent execution manual
+```
+
+### 1-Click GitHub Repository Sync (`https://github.com/dvmorris/duchesne-school-assistant`)
+Parents and developers can sync the entire skill into supported AI platforms directly using the repository URL:
+- **Anthropic Claude (Web & Desktop):** Navigate to **Settings** > **Customize** (or **Plugins** / **Personal plug-in**), select **Add from repository** / **Add marketplace**, paste `https://github.com/dvmorris/duchesne-school-assistant`, and click **Sync**.
+- **Google Gemini:** Navigate to **Settings / Plugins** (or **Gem Manager**), select **Add from repository**, paste `https://github.com/dvmorris/duchesne-school-assistant`, and enable the skill.
+- **OpenAI ChatGPT:** Navigate to **Skills / Customizations** (or **Explore GPTs** > **Create**), select **Import from Repository / URL**, paste `https://github.com/dvmorris/duchesne-school-assistant`, and confirm.
+
+### Native Claude Plugin Manifests (`.claude-plugin/`)
+The `.claude-plugin/` directory provides standards-compliant integration with the Claude plugin ecosystem:
+- **`plugin.json`:** Defines plugin identity (`duchesne-school-assistant`), version (`1.0.0`), description, repository URL (`https://github.com/dvmorris/duchesne-school-assistant`), author metadata, and registers the skill pointing to `SKILL.md`.
+- **`marketplace.json`:** Defines the marketplace catalogue entry (`duchesne-parent-marketplace`) enabling one-click discovery, installation, and auto-updates from GitHub.
+
+### Web Chat Prompt Assets & Setup (`distribution/web/`)
+For parents running without local shell or browser access:
+- **Universal Parent Prompt (`distribution/web/universal_parent_prompt.md`):** A self-contained, turn-key system prompt that embeds family onboarding, grade division routing, critical communication warning checks, and zero-password privacy rules.
+- **Web Chat Setup Guide (`distribution/web/setup_guide.md`):** A clear, step-by-step walkthrough showing parents how to configure Claude Projects, ChatGPT Custom GPTs, or Google Gemini Gems in under 2 minutes.
+
+### Shared Common Knowledge Base (`distribution/common/`)
+- **Master Knowledge Base (`distribution/common/duchesne_knowledge_base.md`):** Comprehensive reference containing campus address (10202 Memorial Dr), bell schedules (Lower/Middle/Upper School), PK4 lunch timing (10:55 AM), Mills Uniform dress codes (School Code: 3550), Sage Dining portals, all 12 official social channels, and zero-password policies.
+- **1-Click Calendar Links (`distribution/common/calendar_links.md`):** Direct links for Apple Calendar (`webcal://`), Google Calendar web import, and Outlook web subscriptions.
+
+### Zero-Password Security Model
+All distribution artifacts—from CLI scripts to Claude plugins and web prompts—enforce a strict Zero-Password guarantee:
+1. No student or parent login credentials (passwords, MFA codes) are ever requested, processed, or stored.
+2. Authenticated portals (Veracross, Toddle) are accessed either via local browser profiles or parent copy-paste.
 
 ---
 
