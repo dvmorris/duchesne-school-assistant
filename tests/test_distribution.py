@@ -15,7 +15,7 @@ class TestDistributionManifests(unittest.TestCase):
         plugins = data.get("plugins", [])
         self.assertEqual(len(plugins), 1)
         self.assertEqual(plugins[0].get("name"), "duchesne-school-assistant")
-        self.assertIn("dvmorris/duchesne-school-assistant", plugins[0]["source"]["url"])
+        self.assertEqual(plugins[0]["source"]["url"], "https://github.com/dvmorris/duchesne-school-assistant")
 
     def test_claude_plugin_json(self):
         plugin_path = REPO_ROOT / ".claude-plugin" / "plugin.json"
