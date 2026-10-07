@@ -77,3 +77,32 @@ class TestDistributionContent(unittest.TestCase):
         self.assertIn("webcal://portals.veracross.com/duchesne/subscribe/", content)
         self.assertIn("calendar.google.com/calendar/r?cid=", content)
 
+    def test_universal_parent_prompt_content(self):
+        prompt_path = REPO_ROOT / "distribution" / "web" / "universal_parent_prompt.md"
+        self.assertTrue(prompt_path.exists())
+        with open(prompt_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        # Hybrid onboarding
+        self.assertIn("Welcome to the Duchesne School Assistant", content)
+        self.assertIn("division", content.lower())
+        self.assertIn("grade", content.lower())
+
+        # Zero password privacy
+        self.assertIn("NEVER ask for or accept Veracross passwords", content)
+
+        # Core capabilities
+        self.assertIn("Spirit Store", content)
+        self.assertIn("Social Media", content)
+        self.assertIn("Veracross", content)
+
+        # Web setup guide
+        guide_path = REPO_ROOT / "distribution" / "web" / "setup_guide.md"
+        self.assertTrue(guide_path.exists())
+        with open(guide_path, "r", encoding="utf-8") as f:
+            guide_content = f.read()
+        self.assertIn("chatgpt.com", guide_content.lower())
+        self.assertIn("claude.ai", guide_content.lower())
+        self.assertIn("gemini.google.com", guide_content.lower())
+
+
