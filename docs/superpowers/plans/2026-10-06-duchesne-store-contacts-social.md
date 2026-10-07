@@ -236,7 +236,7 @@ from scripts.directory_exporter import (
 class TestDirectoryExporter(unittest.TestCase):
     def test_generate_vcard_content(self):
         contact = ParentContact(
-            first_name="Jane",
+            first_name="Maya",
             last_name="Doe",
             email="jane.doe@example.com",
             phone="(713) 555-0123",
@@ -254,7 +254,7 @@ class TestDirectoryExporter(unittest.TestCase):
 
     def test_generate_google_contacts_csv(self):
         contact = ParentContact(
-            first_name="Jane",
+            first_name="Maya",
             last_name="Doe",
             email="jane.doe@example.com",
             phone="(713) 555-0123",

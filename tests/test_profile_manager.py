@@ -63,11 +63,11 @@ class TestProfileManager(unittest.TestCase):
                 toddle_class_id="116643011487614044"
             )
             child2 = ChildProfile(
-                first_name="Jane",
+                first_name="Maya",
                 last_name="Davis",
                 division="middle_school",
                 grade="7",
-                homeroom_advisor="Smith, Sarah",
+                homeroom_advisor="Advisor, Sample",
                 student_id="102"
             )
             profile = FamilyProfile(

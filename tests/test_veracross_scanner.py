@@ -31,11 +31,11 @@ class TestVeracrossScannerCLI(unittest.TestCase):
                     "homeroom_advisor": "Faculty, Sample"
                 },
                 {
-                    "first_name": "Jane",
+                    "first_name": "Maya",
                     "last_name": "Davis",
                     "division": "middle_school",
                     "grade": "7",
-                    "homeroom_advisor": "Smith, Sarah"
+                    "homeroom_advisor": "Advisor, Sample"
                 }
             ],
             "active_dashboards": ["lower_school", "middle_school"]
@@ -108,7 +108,7 @@ class TestVeracrossScannerCLI(unittest.TestCase):
         self.assertEqual(res.returncode, 0)
         self.assertIn("Duchesne Academy Updates", res.stdout)
         self.assertIn("Lower School (Clara — PK4)", res.stdout)
-        self.assertIn("Middle School (Jane — 7th)", res.stdout)
+        self.assertIn("Middle School (Maya — 7th)", res.stdout)
 
     def test_cli_digest_action(self):
         res = subprocess.run(
@@ -171,7 +171,7 @@ class TestVeracrossScannerCLI(unittest.TestCase):
         digest = run_scanner(profile_path=self.profile_path, action="full-scan", print_output=False)
         self.assertIn("Duchesne Academy Updates", digest)
         self.assertIn("Lower School (Clara — PK4)", digest)
-        self.assertIn("Middle School (Jane — 7th)", digest)
+        self.assertIn("Middle School (Maya — 7th)", digest)
 
     def test_duchesne_check_routing_scan(self):
         res = subprocess.run(

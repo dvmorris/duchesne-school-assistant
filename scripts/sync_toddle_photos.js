@@ -83,11 +83,11 @@ function browserExtractPosts() {
       const teacherEl = card.querySelector('[class*="SubjectJournalCard__taggedAssesmentMessageTextV2"]');
       let teacher = 'Teacher';
       if (teacherEl) {
-        teacher = teacherEl.innerText.replace('tagged ', '').trim();
+        teacher = teacherEl.innerText.replace(/tagged\s+[^,\n]+,\s*[^<\n]+/i, '').trim();
       } else {
         for (let i = 0; i < lines.length; i++) {
           if (lines[i].includes('tagged ')) {
-            teacher = lines[i].replace('tagged ', '').trim();
+            teacher = lines[i].replace(/tagged\s+[^,\n]+,\s*[^<\n]+/i, '').trim();
             break;
           }
         }
@@ -130,7 +130,7 @@ function browserExtractPosts() {
       return {
         id: `post_${idx}`,
         teacher: teacher,
-        student: 'Davis, Clara',
+        student: process.env.DUCHESNE_STUDENT_NAME || 'Student',
         caption: caption,
         timeString: timeStr,
         images: Array.from(new Set(bgImgs))

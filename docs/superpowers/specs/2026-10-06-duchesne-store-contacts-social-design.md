@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-06  
 **Status:** Approved  
-**Author:** Antigravity & Antigravity  
+**Author:** Antigravity  
 **Target:** `duchesne-school-assistant` Skill & Portable Agent Package (Sub-Project 2)  
 
 ---
@@ -92,7 +92,7 @@ class StoreItem:
 
 ---
 
-### Section 2: Veracross Directory Crawler & Contact Exporter
+## Section 2: Veracross Directory Crawler & Contact Exporter
 
 #### 2.1 Extraction Target
 * **Portal Route:** `https://portals.veracross.com/duchesne/parent/directory`

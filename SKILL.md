@@ -75,7 +75,7 @@ The assistant uses a structured family profile to dynamically adapt checks, dash
     },
     {
       "student_id": "1002",
-      "first_name": "Clara",
+      "first_name": "Maya",
       "last_name": "Davis",
       "division": "middle_school",
       "grade": "7",
@@ -183,7 +183,7 @@ Use this mode when running in a cloud web chat environment without a local shell
 #### Step 1: Initialize Family Profile
 Prompt the user with this template:
 > "To tailor your Duchesne Academy digest, please reply with:
-> 1. Your children's names and current grades (e.g., Clara in PK4, Clara in 7th).
+> 1. Your children's names and current grades (e.g., Clara in PK4, Maya in 7th).
 > 2. Any extracurricular areas to track (Athletics, Fine Arts, Extended Programs).
 > 3. Whether you'd like an audit of your Veracross email delivery settings."
 
@@ -289,7 +289,7 @@ The assistant maintains processed items in `~/.gemini/antigravity/duchesne_state
     "ms_retreat_reminder_20261005"
   ],
   "processed_newsletters": [
-    "toddle_mcevoy_20261005"
+    "toddle_pk4_20261005"
   ],
   "processed_photos": [
     "toddle_img_987654"
@@ -483,7 +483,7 @@ Automatically download class photos posted in the Toddle Portfolio tab, attach r
    - Extract cards containing tagged student updates (e.g., `SubjectJournalCard` elements).
 2. **Extract Rich Metadata:**
    - **Post Caption / Comments:** Teacher's note (e.g., *"B is for Banana Bread 🍌"*, *"Morning work stations 😊"*).
-   - **Teacher Name:** e.g., `Faculty, Lower School`, `Faculty, Lower School`, `Faculty, Sample`.
+   - **Teacher Name:** e.g., `Faculty, Lower School` or teacher name.
    - **Student Tagged:** `Davis, Clara`.
    - **Date / Timestamp:** Exact post time (e.g., `2026-08-27 10:27:00`).
 3. **Download & Stamp EXIF Metadata:**
@@ -491,7 +491,7 @@ Automatically download class photos posted in the Toddle Portfolio tab, attach r
    - Run `python3 scripts/tag_and_upload_photos.py` to embed:
      - **Image Description (EXIF 270):** Comments, teacher attribution, student name:
        ```text
-       [Duchesne Academy - PK4] Pete the Cat with a special guest in guitar- Mr. Gallaher from upper school! | Teacher: Faculty, Sample | Student: Davis, Clara | Toddle: 2026:08:27 10:27:00
+       [Duchesne Academy - PK4] Pete the Cat with a special guest on guitar! | Teacher: Faculty, Lower School | Student: Davis, Clara | Toddle: 2026:08:27 10:27:00
        ```
      - **Capture Timestamps (EXIF 36867 `DateTimeOriginal`, 36868 `DateTimeDigitized`, 306 `DateTime`):** Exact Toddle post time.
      - **Filesystem mtime:** Matched to original post timestamp so Google Photos chronologically orders them correctly.
@@ -556,17 +556,17 @@ When producing a daily or weekly synthesized report, format output using clear, 
   - **Delivery:** Sent via Email & Portal
 
 ### 🏛️ All-School Announcements
-- **Head of School Friday Letter (Head of School):** Welcome back reflection and Sacred Heart Goal I focus.
+- **Head of School Friday Letter:** Welcome back reflection and Sacred Heart Goal I focus.
 - **Parent Association (PA):** Volunteer positions open for Extravaganza committee.
 
 ### 🎒 Lower School (Clara — PK4)
 - **Head of Lower School Letter:** Blessing of the Animals recap; uniform reminders for cooler weather.
-- **PK4 Homeroom Updates:**
+- **Homeroom Updates:**
   - *Sophie's Space:* Goal I (Personal and active faith in God); October virtue: Kindness.
   - *Learning Focus:* Letters P & Q, counting sets of 10, autumn leaves study.
   - *Reminders:* Bring 4x6 family photo; Library on Tuesday.
 
-### 📚 Middle School (Clara — 7th)
+### 📚 Middle School (Maya — 7th)
 - **Head of Middle School Letter:** Quarter 1 midterm feedback and student-led conferences preview.
 - **Advisory & Academics:** Fall retreat registration open; bring athletic uniform on Wednesday.
 

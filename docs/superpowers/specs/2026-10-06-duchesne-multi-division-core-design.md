@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-06  
 **Status:** Approved  
-**Author:** Antigravity & Antigravity  
+**Author:** Antigravity  
 **Target:** `duchesne-school-assistant` Skill & Portable Agent Package  
 
 ---

@@ -80,7 +80,7 @@ class TestProfileManager(unittest.TestCase):
                 toddle_class_id="116643011487614044"
             )
             child2 = ChildProfile(
-                first_name="Jane",
+                first_name="Maya",
                 last_name="Davis",
                 division="middle_school",
                 grade="7",
@@ -654,7 +654,7 @@ from scripts.dashboard_aggregator import (
 class TestDashboardAggregator(unittest.TestCase):
     def test_synthesize_family_digest_multi_child(self):
         c1 = ChildProfile(first_name="Clara", last_name="Davis", division="lower_school", grade="PK4")
-        c2 = ChildProfile(first_name="Jane", last_name="Davis", division="middle_school", grade="7")
+        c2 = ChildProfile(first_name="Maya", last_name="Davis", division="middle_school", grade="7")
         profile = FamilyProfile(family_id="123", children=[c1, c2])
 
         items = [
