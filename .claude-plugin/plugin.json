@@ -1,0 +1,17 @@
+{
+  "name": "duchesne-school-assistant",
+  "version": "1.0.0",
+  "description": "Duchesne Academy parent companion for multi-division schedules, Veracross portals, Toddle, Nutrislice, Spirit Store, and social media digests.",
+  "author": {
+    "name": "Duchesne Academy Parents"
+  },
+  "homepage": "https://github.com/dvmorris/duchesne-school-assistant",
+  "repository": "https://github.com/dvmorris/duchesne-school-assistant",
+  "entrypoint": "scripts/veracross_scanner.py",
+  "skills": [
+    {
+      "name": "duchesne-school-assistant",
+      "path": "SKILL.md"
+    }
+  ]
+}

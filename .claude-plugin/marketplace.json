@@ -1,0 +1,18 @@
+{
+  "name": "duchesne-parent-marketplace",
+  "owner": {
+    "name": "Duchesne Academy Parents",
+    "email": "support@duchesne-assistant.local"
+  },
+  "plugins": [
+    {
+      "name": "duchesne-school-assistant",
+      "description": "Duchesne Academy parent companion: schedules, uniform rules, dining, portals, and digests",
+      "version": "1.0.0",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/dvmorris/duchesne-school-assistant.git"
+      }
+    }
+  ]
+}
